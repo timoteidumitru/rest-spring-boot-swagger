@@ -9,10 +9,16 @@ import com.books.api.repository.BooksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class BooksService {
     @Autowired
     private BooksRepository booksRepository;
+
+    public List<Book> getAllBooks() {
+        return booksRepository.getAllBooks();
+    }
 
     public void updateBook(Book updatedBook) throws BookNotFoundToUpdateException {
         int bookId = updatedBook.getId();

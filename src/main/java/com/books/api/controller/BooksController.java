@@ -12,11 +12,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/books")
 public class BooksController {
     @Autowired
     private BooksService booksService;
+
+    @GetMapping("/all")
+    ResponseEntity<Object> getAllBooks() {
+        Logger.LogInfo(String.format("%s -> Received GET request to retrieve all books", this.getClass().getSimpleName()));
+
+        List<Book> allBooks = booksService.getAllBooks();
+        if (allBooks != null && !allBooks.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(allBooks);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No books found.");
+        }
+    }
 
     @PutMapping("/{id}")
     ResponseEntity<Object> updateBookByID(@PathVariable int id, @RequestBody Book updatedBook) {
