@@ -5,6 +5,6 @@ public class DuplicateBookException extends Exception {
         System.out.printf("A book with the name: '" + entity + "' already exists!");
     }
     public String getMessage(String bookTitle) {
-        return "A book with the name '" + bookTitle + "' already exists!";
+        return "Book with the name: '" + bookTitle + "' already exists!";
     }
 }

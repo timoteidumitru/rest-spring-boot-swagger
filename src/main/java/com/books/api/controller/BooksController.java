@@ -2,6 +2,7 @@ package com.books.api.controller;
 
 import com.books.api.exceptions.BookNotFoundException;
 import com.books.api.exceptions.BookNotFoundToDeleteException;
+import com.books.api.exceptions.BookNotFoundToUpdateException;
 import com.books.api.exceptions.DuplicateBookException;
 import com.books.api.model.Book;
 import com.books.api.services.BooksService;
@@ -39,7 +40,7 @@ public class BooksController {
             if (book != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(book);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ID " + id + " not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ID: " + id + " not found.");
             }
         } catch (BookNotFoundException ex) {
             Logger.LogError(String.format("%s -> GET request failed: %s", this.getClass().getSimpleName(), ex.notFoundMessage(String.valueOf(id))));
@@ -53,9 +54,23 @@ public class BooksController {
 
         try {
             booksService.deleteBookById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Book with ID '" + id + "' was successfully deleted.");
+            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully deleted.");
         } catch (BookNotFoundToDeleteException ex) {
             Logger.LogError(String.format("%s -> DELETE request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<Object> updateBookByID(@PathVariable int id, @RequestBody Book updatedBook) {
+        Logger.LogInfo(String.format("%s -> Received PUT request to update book by ID: %d", this.getClass().getSimpleName(), id));
+
+        try {
+            updatedBook.setId(id);
+            booksService.updateBook(updatedBook);
+            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully updated.");
+        } catch (BookNotFoundToUpdateException ex) {
+            Logger.LogError(String.format("%s -> PUT request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }

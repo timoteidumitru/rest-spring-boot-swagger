@@ -2,6 +2,7 @@ package com.books.api.services;
 
 import com.books.api.exceptions.BookNotFoundException;
 import com.books.api.exceptions.BookNotFoundToDeleteException;
+import com.books.api.exceptions.BookNotFoundToUpdateException;
 import com.books.api.exceptions.DuplicateBookException;
 import com.books.api.model.Book;
 import com.books.api.repository.BooksRepository;
@@ -23,5 +24,14 @@ public class BooksService {
 
     public void deleteBookById(int id) throws BookNotFoundToDeleteException {
         booksRepository.deleteBookById(id);
+    }
+
+    public void updateBook(Book updatedBook) throws BookNotFoundToUpdateException {
+        int bookId = updatedBook.getId();
+        Book existingBook = booksRepository.findBookByID(bookId);
+        if (existingBook == null) {
+            throw new BookNotFoundToUpdateException(bookId);
+        }
+        booksRepository.updateBook(updatedBook);
     }
 }

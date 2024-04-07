@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class Logger {
     public static void LogInfo(String info){
+
         System.out.printf("Info at: " + LocalDateTime.now() + " --> " + info);
     }
 

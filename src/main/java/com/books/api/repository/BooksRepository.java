@@ -1,6 +1,7 @@
 package com.books.api.repository;
 
 import com.books.api.exceptions.BookNotFoundToDeleteException;
+import com.books.api.exceptions.BookNotFoundToUpdateException;
 import com.books.api.exceptions.DuplicateBookException;
 import com.books.api.model.Book;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,21 @@ public class BooksRepository {
         add(new Book(9, "The Road", "Cormac McCarthy's post-apocalyptic novel following a father and son's journey through a desolate landscape.", "Post-apocalyptic", 4.5));
         add(new Book(10, "Twilight", "Stephenie Meyer's supernatural romance between a human girl and a vampire, set in the town of Forks, Washington.", "Paranormal romance", 4.2));
     }};
+
+    public void updateBook(Book updatedBook) throws BookNotFoundToUpdateException {
+        boolean found = false;
+        for (int i = 0; i < dummyBookData.size(); i++) {
+            Book book = dummyBookData.get(i);
+            if (book.getId() == updatedBook.getId()) {
+                dummyBookData.set(i, updatedBook);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new BookNotFoundToUpdateException(updatedBook.getId());
+        }
+    }
 
     public void deleteBookById(int id) throws BookNotFoundToDeleteException {
         Iterator<Book> iterator = dummyBookData.iterator();
@@ -71,5 +87,3 @@ public class BooksRepository {
         return foundBook.orElse(null);
     }
 }
-
-
