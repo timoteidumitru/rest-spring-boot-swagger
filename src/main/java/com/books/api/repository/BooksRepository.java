@@ -57,6 +57,13 @@ public class BooksRepository {
         }
     }
 
+    public Book findBookByID(int id) {
+        Optional<Book> foundBook = dummyBookData.stream()
+                .filter(book -> book.getId() == id)
+                .findFirst();
+        return foundBook.orElse(null);
+    }
+
     public Book addBook(Book newBook) throws DuplicateBookException {
         // Find the maximum ID currently present in the list
         int maxId = dummyBookData.stream()
@@ -78,12 +85,5 @@ public class BooksRepository {
             dummyBookData.add(newBook);
         }
         return newBook;
-    }
-
-    public Book findBookByID(int id) {
-        Optional<Book> foundBook = dummyBookData.stream()
-                .filter(book -> book.getId() == id)
-                .findFirst();
-        return foundBook.orElse(null);
     }
 }

@@ -18,16 +18,30 @@ public class BooksController {
     @Autowired
     private BooksService booksService;
 
-    @PostMapping()
-    ResponseEntity<Object> addNewBook(@RequestBody Book book) {
-        Logger.LogInfo(String.format("%s -> Received POST request.", this.getClass().getSimpleName()));
+    @PutMapping("/{id}")
+    ResponseEntity<Object> updateBookByID(@PathVariable int id, @RequestBody Book updatedBook) {
+        Logger.LogInfo(String.format("%s -> Received PUT request to update book by ID: %d", this.getClass().getSimpleName(), id));
 
         try {
-            Book newBookAdded = booksService.addNewBook(book);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newBookAdded);
-        } catch (DuplicateBookException err) {
-            Logger.LogError(String.format("%s -> POST request failed: %s", this.getClass().getSimpleName(), err.getMessage()));
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(err.getMessage(book.getName()));
+            updatedBook.setId(id);
+            booksService.updateBook(updatedBook);
+            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully updated.");
+        } catch (BookNotFoundToUpdateException ex) {
+            Logger.LogError(String.format("%s -> PUT request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Object> deleteBookByID(@PathVariable int id) {
+        Logger.LogInfo(String.format("%s -> Received DELETE request to delete book by ID: %d", this.getClass().getSimpleName(), id));
+
+        try {
+            booksService.deleteBookById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully deleted.");
+        } catch (BookNotFoundToDeleteException ex) {
+            Logger.LogError(String.format("%s -> DELETE request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
@@ -48,31 +62,16 @@ public class BooksController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Object> deleteBookByID(@PathVariable int id) {
-        Logger.LogInfo(String.format("%s -> Received DELETE request to delete book by ID: %d", this.getClass().getSimpleName(), id));
+    @PostMapping()
+    ResponseEntity<Object> addNewBook(@RequestBody Book book) {
+        Logger.LogInfo(String.format("%s -> Received POST request.", this.getClass().getSimpleName()));
 
         try {
-            booksService.deleteBookById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully deleted.");
-        } catch (BookNotFoundToDeleteException ex) {
-            Logger.LogError(String.format("%s -> DELETE request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            Book newBookAdded = booksService.addNewBook(book);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newBookAdded);
+        } catch (DuplicateBookException err) {
+            Logger.LogError(String.format("%s -> POST request failed: %s", this.getClass().getSimpleName(), err.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(err.getMessage(book.getName()));
         }
     }
-
-    @PutMapping("/{id}")
-    ResponseEntity<Object> updateBookByID(@PathVariable int id, @RequestBody Book updatedBook) {
-        Logger.LogInfo(String.format("%s -> Received PUT request to update book by ID: %d", this.getClass().getSimpleName(), id));
-
-        try {
-            updatedBook.setId(id);
-            booksService.updateBook(updatedBook);
-            return ResponseEntity.status(HttpStatus.OK).body("Book with ID: '" + id + "' was successfully updated.");
-        } catch (BookNotFoundToUpdateException ex) {
-            Logger.LogError(String.format("%s -> PUT request failed: %s", this.getClass().getSimpleName(), ex.getMessage()));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
 }

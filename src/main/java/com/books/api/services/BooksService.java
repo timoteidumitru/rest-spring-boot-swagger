@@ -14,18 +14,6 @@ public class BooksService {
     @Autowired
     private BooksRepository booksRepository;
 
-    public Book addNewBook(Book newBook) throws DuplicateBookException {
-        return booksRepository.addBook(newBook);
-    }
-
-    public Book getBookByID(int id) throws BookNotFoundException {
-        return booksRepository.findBookByID(id);
-    }
-
-    public void deleteBookById(int id) throws BookNotFoundToDeleteException {
-        booksRepository.deleteBookById(id);
-    }
-
     public void updateBook(Book updatedBook) throws BookNotFoundToUpdateException {
         int bookId = updatedBook.getId();
         Book existingBook = booksRepository.findBookByID(bookId);
@@ -33,5 +21,17 @@ public class BooksService {
             throw new BookNotFoundToUpdateException(bookId);
         }
         booksRepository.updateBook(updatedBook);
+    }
+
+    public void deleteBookById(int id) throws BookNotFoundToDeleteException {
+        booksRepository.deleteBookById(id);
+    }
+
+    public Book getBookByID(int id) throws BookNotFoundException {
+        return booksRepository.findBookByID(id);
+    }
+
+    public Book addNewBook(Book newBook) throws DuplicateBookException {
+        return booksRepository.addBook(newBook);
     }
 }
